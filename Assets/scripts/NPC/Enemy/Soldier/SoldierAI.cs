@@ -37,15 +37,13 @@ public class SoldierAI : MonoBehaviour
 
 
 
+
     [Header("Line Of Sight Checker")]
     public float radius;
     [Range(30 ,90 )]
     public float angle;
-
     public GameObject PlayerRef;
-
     public LayerMask targetMask, obstructionMask;
-
     public bool canSeePlayer;
 
 
@@ -82,7 +80,8 @@ public class SoldierAI : MonoBehaviour
         Attack,
         Hide,
         Patrol,
-        Follow
+        Follow,
+        Dead
     }
 
 
@@ -177,6 +176,10 @@ public class SoldierAI : MonoBehaviour
         {
             IdleMovement();
         }
+        if (_state == SoldierState.Dead)
+        {
+            Agent.enabled = false;
+        }
 
 
         //animations
@@ -234,6 +237,9 @@ public class SoldierAI : MonoBehaviour
                 break;
 
             case SoldierState.Follow:
+                locked = false;
+                break;
+            case SoldierState.Dead:
                 locked = false;
                 break;
         }
@@ -379,7 +385,7 @@ public class SoldierAI : MonoBehaviour
 
     void Die()
     {
-        Destroy(gameObject);
+        StateManager(_state, SoldierState.Dead);
     }
 
 

@@ -41,8 +41,12 @@ public class Playerlook : MonoBehaviour
             orientation.rotation = Quaternion.Euler(0, xRotation, 0);
 
             //lock cursor
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            if (!PauseMenu.GameIsPaused)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+
         //}
         //else
         //{

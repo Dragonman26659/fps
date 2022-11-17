@@ -5,18 +5,18 @@ using UnityEngine.AI;
 
 public class ZombieAI : MonoBehaviour
 {
-    public NpcHealth Stats;
+    private Transform player;
+    private NavMeshAgent Agent;
 
 
-    // Start is called before the first frame update
     void Start()
     {
-        
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        Agent = GetComponent<NavMeshAgent>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        Agent.SetDestination(player.position);
     }
 }

@@ -68,36 +68,34 @@ public class Barrels : MonoBehaviour
             BoomNoise.Play();
             Explosion = Instantiate(ExplosionEffect, transform.position, transform.rotation);
 
-            Collider[] collidersA = Physics.OverlapSphere(transform.position, BlastRadius);
 
-            foreach (Collider nearbyObject in collidersA)
+            Collider[] colliders = Physics.OverlapSphere(transform.position, BlastRadius);
+            foreach(Collider nearbyObject in colliders)
             {
-                Health Health = nearbyObject.GetComponent<Health>();
-                if (Health != null)
-                {
-                    Health.TakeDamage(PlayerDamage);
-                }
-                NpcHealth EnemyHealth = nearbyObject.GetComponent<NpcHealth>();
-                if (NpcHealth != null)
-                {
-                    NpcHealth.TakeDamage(EnemyDamage);
-                }
-            }
 
-            Collider[] collidersB = Physics.OverlapSphere(transform.position, BlastRadius);
-            foreach (Collider nearbyObject in collidersB)
-            {
+                NpcHealth enemy = nearbyObject.GetComponent<NpcHealth>();
                 Rigidbody rb = nearbyObject.GetComponent<Rigidbody>();
+                Health player = nearbyObject.GetComponent<Health>();
+
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(EnemyDamage);
+                } 
+                if (player != null)
+                {
+                    player.TakeDamage(PlayerDamage);
+                }
                 if (rb != null)
                 {
                     rb.AddExplosionForce(BlastForce, transform.position, BlastRadius);
                 }
             }
+            
             hasExploded = true;
         }
         if (hasExploded)
         {
-            Destroy(gameObject, 0.80f);
+            Destroy(gameObject, 0.3f);
             Destroy(Fire);
             Destroy(Explosion, 1f);
         }
