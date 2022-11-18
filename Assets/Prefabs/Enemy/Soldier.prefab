@@ -1467,6 +1467,7 @@ GameObject:
   - component: {fileID: 2090838233249657332}
   - component: {fileID: 2227656214588861931}
   - component: {fileID: 6369537797438705347}
+  - component: {fileID: 4520136127042946187}
   m_Layer: 0
   m_Name: Soldier
   m_TagString: Untagged
@@ -1582,8 +1583,7 @@ MonoBehaviour:
   sightRange: 15
   attackRange: 9
   radioRequest: 0
-  MainColl: {fileID: 1287117483194994611}
-  Rig: {fileID: 1287117483483500301}
+  ragdoll: {fileID: 4520136127042946187}
   radius: 15
   angle: 60
   PlayerRef: {fileID: 0}
@@ -1639,6 +1639,21 @@ MonoBehaviour:
   health: 60
   velldamage: 50
   CanTakeRbDamage: 1
+--- !u!114 &4520136127042946187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287117483483500401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1685cd58f0fc79046b9114da140e1245, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maincoll: {fileID: 1287117483194994611}
+  thisGuysRig: {fileID: 1287117483483500301}
+  ThisGuysAnimator: {fileID: 1287117483490933965}
 --- !u!1 &1287117483483500403
 GameObject:
   m_ObjectHideFlags: 0

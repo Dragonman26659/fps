@@ -34,6 +34,7 @@ public class SoldierAI : MonoBehaviour
     public float sightRange = 7f;
     public float attackRange = 4f;
     public bool radioRequest = false;
+    public RagdollScript ragdoll;
 
 
 
@@ -127,31 +128,31 @@ public class SoldierAI : MonoBehaviour
 
 
         //set state based on ranges and health
-        if (playerInSightRange && !playerInAttackRange && canSeePlayer)
+        if (playerInSightRange && !playerInAttackRange && canSeePlayer && _state != SoldierState.Dead)
         {
             StateManager(_state, SoldierState.Follow);
             radioRequest = false;
         }
-        if (playerInSightRange && playerInAttackRange && canSeePlayer)
+        if (playerInSightRange && playerInAttackRange && canSeePlayer && _state != SoldierState.Dead)
         {
             StateManager(_state, SoldierState.Attack);
             radioRequest = false;
         }
-        if (!playerInSightRange && !playerInAttackRange)
+        if (!playerInSightRange && !playerInAttackRange && _state != SoldierState.Dead)
         {
             if (!radioRequest)
             {
                 helpRequested = false;
             }
         }
-        if (HealthScript.health <= HealthThreshHold && !helpRequested)
+        if (HealthScript.health <= HealthThreshHold && !helpRequested && _state != SoldierState.Dead)
         {
             StateManager(_state, SoldierState.Hide);
         }
 
 
         //alert others in squad if player spotted
-        if (playerInSightRange && !helpRequested && canSeePlayer)
+        if (playerInSightRange && !helpRequested && canSeePlayer && _state != SoldierState.Dead)
         {
             ChatterAdvancing.Play();
             AlertSquad(SoldierState.Follow);
@@ -385,7 +386,8 @@ public class SoldierAI : MonoBehaviour
 
     void Die()
     {
-        StateManager(_state, SoldierState.Dead);
+        _state = SoldierState.Dead;
+        ragdoll.RagdollModeOn();
     }
 
 
