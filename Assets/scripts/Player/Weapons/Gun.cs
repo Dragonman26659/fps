@@ -32,29 +32,22 @@ public class Gun : MonoBehaviour
     public int MaxAmmo = 10;
     public int AmmoPickupAmount = 10;
     public float reloadTime = 2f;
+    public int reloadAmmount = 1;
+    public float ReloadStartDelay = 0f;
+    private float reloadTimer = 0f;
     private int CurrentAmmo;
     private int ammoStore;
     public KeyCode ReloadKey = KeyCode.R;
     private bool isReloading = false;
     public Text AmmoText;
     public int StartAmmo = 10;
+    private bool hasStartedReloading = false;
 
     [Header("Recoil")]
     //hitfire Recoil
     [SerializeField] private float recoilX;
     [SerializeField] private float recoilY;
     [SerializeField] private float recoilZ;
-
-
-
-
-    [Header("Mele attack")]
-    public float MeleDamage = 10f;
-    public float MeleRange = 3f;
-    public float MeleCooldown = 1f;
-    public KeyCode meleKey = KeyCode.Mouse1;
-    private float timeBeforeNextHit = 0f;
-
 
 
 
@@ -71,6 +64,7 @@ public class Gun : MonoBehaviour
     {
         isReloading = false;
         animator.SetBool("Reloading", false);
+        animator.SetBool("hasStartedReloading", false);
     }
 
 
@@ -78,48 +72,66 @@ public class Gun : MonoBehaviour
     {
 
         AmmoText.text = CurrentAmmo + "/" + ammoStore;
-        if (timeBeforeNextHit >= 0f)
-        {
-            timeBeforeNextHit -= Time.deltaTime;
-        }
-
-
-        //Mele hit
-        if (Input.GetKeyDown(meleKey) && timeBeforeNextHit <= 0f)
-        {
-            Mele();
-        }
-
         if (isReloading && ammoStore != 0)
         {
             return;
         }
+        if (reloadTimer > 0f)
+        {
+            reloadTimer -= Time.deltaTime;
+        }
 
+        if (!hasStartedReloading)
+        {
+            animator.SetBool("hasStartedReloading", false);
+        }
+        if (CurrentAmmo >= MaxAmmo || ammoStore <= 0)
+        {
+            Debug.Log("Ammo reload finished");
+            hasStartedReloading = false;
+            animator.SetBool("hasStartedReloading", false);
+        }
 
         //Reload
-        if(Time.time >= nextTimeToFire && !isReloading)
+        if (Time.time >= nextTimeToFire && !isReloading && ammoStore > 0)
         {
-            if (CurrentAmmo <= 0 || Input.GetKey(ReloadKey))
+            if (CurrentAmmo <= 0 || Input.GetKey(ReloadKey) || hasStartedReloading)
             {
+                if (!hasStartedReloading)
+                {
+                    hasStartedReloading = true;
+                    animator.SetBool("hasStartedReloading", true);
+                    reloadTimer = ReloadStartDelay;
+                }
+
                 if(CurrentAmmo >= MaxAmmo)
                 {
-                    return;
+                    CurrentAmmo = MaxAmmo;
                 }
-                else
+
+                else if (reloadTimer <= 0f)
                 {
                     
                     if(ammoStore >= 1)
                     {
                         int reloadAmmo = MaxAmmo - CurrentAmmo;
-                        if (ammoStore < reloadAmmo)
+                        if (reloadAmmo <= reloadAmmount)
                         {
-                            StartCoroutine(Reload(ammoStore));
-                            ammoStore = 0;
-                        }
-                        else if(reloadAmmo <= ammoStore)
-                        {
+                            if (ammoStore < reloadAmmo)
+                            {
+                                StartCoroutine(Reload(ammoStore));
+                                ammoStore = 0;
+                            }
+                            else if (reloadAmmo <= ammoStore)
+                            {
                                 StartCoroutine(Reload(reloadAmmo));
                                 ammoStore -= reloadAmmo;
+                            }
+                        }
+                        else if (reloadAmmo > reloadAmmount)
+                        {
+                            StartCoroutine(Reload(reloadAmmount));
+                            ammoStore -= reloadAmmount;
                         }
                         else
                         {
@@ -128,10 +140,20 @@ public class Gun : MonoBehaviour
                     }
                     else
                     {
-                        return;
+                        if (CurrentAmmo >= MaxAmmo || ammoStore <= 0)
+                        {
+                            Debug.Log("Ammo reload finished");
+                            hasStartedReloading = false;
+                            animator.SetBool("hasStartedReloading", false);
+                        }
+                        else
+                        {
+                            Debug.LogError("Ammo Error");
+                        }
                     }
                 }
             }
+
         }
 
 
@@ -163,6 +185,11 @@ public class Gun : MonoBehaviour
     //ShootSound function
     void Shoot()
     {
+        if (hasStartedReloading)
+        {
+            hasStartedReloading = false;
+        }
+
         muzzleFlash.Play();
         animator.SetTrigger("shoot");
         ShootSound.Play();
@@ -192,31 +219,6 @@ public class Gun : MonoBehaviour
                 {
                     hit.rigidbody.AddForce(-hit.normal * ImpactForce);
                 }
-            }
-        }
-    }
-
-
-
-
-    void Mele()
-    {
-        animator.SetTrigger("mele");
-        MeleSound.Play();
-
-        RaycastHit MeleHit;
-        if (timeBeforeNextHit <= 0f)
-        {
-            if(Physics.Raycast(fpscam.transform.position,fpscam.transform.forward , out MeleHit, MeleRange))
-            {
-                    NpcHealth NpcHealth = MeleHit.transform.GetComponent<NpcHealth>();
-                    if (NpcHealth != null)
-                    {
-                        NpcHealth.TakeDamage(MeleDamage);
-                        GameObject bloodGO = Instantiate(NpcHealthImpactEffect, MeleHit.point, Quaternion.LookRotation(MeleHit.normal));
-                        Destroy(bloodGO, 2f);
-                        timeBeforeNextHit = MeleCooldown;
-                    }
             }
         }
     }

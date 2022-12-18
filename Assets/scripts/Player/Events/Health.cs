@@ -7,18 +7,25 @@ public class Health : MonoBehaviour
 {
     public int MaxHealth;
     public int health = 100;
-    public Text healthDisp;
+    public float TimeToStartRegen = 2f;
+    private float timeSinseLastDamage;
+    private float timeSinseLastHeal;
+    public Slider slider;
+    public PlayersMovement movementScript;
 
 
     void Start()
     {
         MaxHealth = health;
+        slider.value = health;
     }
 
     // Update is called once per frame
     void Update()
     {
-        healthDisp.text = health + "/" + MaxHealth;
+        timeSinseLastDamage += Time.deltaTime;
+        timeSinseLastHeal += Time.deltaTime;
+
         if (health <= 0)
         {
             health = 0;
@@ -29,15 +36,28 @@ public class Health : MonoBehaviour
         {
             health = MaxHealth;
         }
+
+        if (timeSinseLastDamage >= TimeToStartRegen && movementScript.stamina >= movementScript.maxStamina)
+        {
+            PlayerHeal(1);
+        }
     }
 
     public void TakeDamage(int damage)
     {
         health -= damage;
-    }
+        timeSinseLastDamage = 0f;
+        slider.value = health;
+
+}
 
     public void PlayerHeal(int ammount)
     {
-        health += ammount;
+        if (timeSinseLastHeal >= 0.02 && health < MaxHealth)
+        {
+            health += ammount;
+            timeSinseLastHeal = 0f;
+            slider.value = health;
+        }
     }
 }

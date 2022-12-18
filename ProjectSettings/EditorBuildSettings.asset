@@ -8,7 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/DevScenes/DockL1.unity
     guid: 98768fc44118a2b41aeb51d331f72dac
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DevScenes/Combat map 1.unity
     guid: ddfd88b71e1e79d47849e71ad3ac3b5b
+  - enabled: 1
+    path: Assets/Scenes/Temp/GameScene.unity
+    guid: 075e1fe10b8f51f449bb5192b8b4ce2a
   m_configObjects: {}
