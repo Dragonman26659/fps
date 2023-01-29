@@ -17,7 +17,6 @@ public class Barrels : MonoBehaviour
     public float EnemyDamage = 50f;
 
     //bool logic
-    private bool isOnFire = false;
     private bool hasExploded = false;
     private bool isTimerStarted = false;
 
@@ -65,7 +64,11 @@ public class Barrels : MonoBehaviour
     {
         if (!hasExploded)
         {
-            BoomNoise.Play();
+            hasExploded = true;
+            if (!BoomNoise.isPlaying)
+            {
+                BoomNoise.Play();
+            }
             Explosion = Instantiate(ExplosionEffect, transform.position, transform.rotation);
 
 
@@ -90,8 +93,6 @@ public class Barrels : MonoBehaviour
                     rb.AddExplosionForce(BlastForce, transform.position, BlastRadius);
                 }
             }
-            
-            hasExploded = true;
         }
         if (hasExploded)
         {

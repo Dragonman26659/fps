@@ -1580,11 +1580,11 @@ MonoBehaviour:
   whatIsPlayer:
     serializedVersion: 2
     m_Bits: 64
-  sightRange: 15
-  attackRange: 9
+  sightRange: 60
+  attackRange: 30
   radioRequest: 0
   ragdoll: {fileID: 4520136127042946187}
-  radius: 15
+  radius: 60
   angle: 60
   PlayerRef: {fileID: 0}
   targetMask:
@@ -1595,7 +1595,7 @@ MonoBehaviour:
     m_Bits: 8
   canSeePlayer: 0
   Gun: {fileID: 2227656214588861931}
-  ShootDelay: 0.4
+  ShootDelay: 0.2
   SquadMember1: {fileID: 0}
   SquadMember2: {fileID: 0}
   SquadMember3: {fileID: 0}
@@ -1612,7 +1612,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b3b0f26b2f14ef43a7ecc73a76e502c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 3
+  damage: 5
   range: 100
   ShootSound: {fileID: 8873663955903477747}
   animator: {fileID: 1287117483490933965}
@@ -1622,7 +1622,7 @@ MonoBehaviour:
   surfaceImpactEffect: {fileID: 1000010355441670, guid: 02a509a7fa70ed740ba4197e20c5d32d, type: 3}
   enemyImpactEffect: {fileID: 1000010191825552, guid: 83e55d3418297934fab882559d009285, type: 3}
   bulletsPerShot: 1
-  bulletSpread: 0.06
+  bulletSpread: 0.2
 --- !u!114 &6369537797438705347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1636,7 +1636,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 0
-  health: 60
+  health: 100
   velldamage: 50
   CanTakeRbDamage: 1
 --- !u!114 &4520136127042946187

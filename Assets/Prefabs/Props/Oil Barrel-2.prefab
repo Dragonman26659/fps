@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5052884564679197685}
   - component: {fileID: 5052884564679197646}
   - component: {fileID: 5052884564679197647}
+  - component: {fileID: 2728071594897644398}
   m_Layer: 0
   m_Name: Oil Barrel-2
   m_TagString: Untagged
@@ -114,7 +115,7 @@ MeshCollider:
   m_Enabled: 1
   serializedVersion: 4
   m_Convex: 1
-  m_CookingOptions: 30
+  m_CookingOptions: -1
   m_Mesh: {fileID: 5116249719996997985, guid: 83e5175bc996a1743aaea0a3c1c3b824, type: 3}
 --- !u!114 &5052884564679197646
 MonoBehaviour:
@@ -153,6 +154,22 @@ MonoBehaviour:
   BlastForce: 1000
   PlayerDamage: 70
   EnemyDamage: 50
+--- !u!208 &2728071594897644398
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4841305999442270611}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 0
+  m_Extents: {x: 0.26500002, y: 0.39900002, z: 0.26500002}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0.39900002, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &5052884565398829291
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,7 +213,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 4e1dd4392e9a8604c9ae76cbe00e97d5, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.508
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -207,7 +224,7 @@ AudioSource:
   MinDistance: 1
   MaxDistance: 500
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 2
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -216,9 +233,18 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.7910843
       inSlope: 0
       outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.1417726
+      value: 0.20605999
+      inSlope: -1.1675309
+      outSlope: -1.1675309
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
@@ -269,8 +295,8 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 1
+      time: 0.01156044
+      value: 0.7953491
       inSlope: 0
       outSlope: 0
       tangentMode: 0
