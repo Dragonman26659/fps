@@ -87,7 +87,6 @@ public class Gun : MonoBehaviour
         }
         if (CurrentAmmo >= MaxAmmo || ammoStore <= 0)
         {
-            Debug.Log("Ammo reload finished");
             hasStartedReloading = false;
             animator.SetBool("hasStartedReloading", false);
         }
@@ -142,7 +141,6 @@ public class Gun : MonoBehaviour
                     {
                         if (CurrentAmmo >= MaxAmmo || ammoStore <= 0)
                         {
-                            Debug.Log("Ammo reload finished");
                             hasStartedReloading = false;
                             animator.SetBool("hasStartedReloading", false);
                         }
@@ -229,7 +227,6 @@ public class Gun : MonoBehaviour
     {
         isReloading = true;
         ReloadSound.Play();
-        Debug.Log(ammoStore);
         animator.SetBool("Reloading", true);
         yield return new WaitForSeconds(reloadTime);
         animator.SetBool("Reloading", false);

@@ -6,6 +6,11 @@ using UnityEngine.AI;
 
 public class SoldierAI : MonoBehaviour
 {
+
+
+    bool IsDead = false;
+
+
     [Header("animation")]
     public Animator soldierAnimator;
 
@@ -388,6 +393,13 @@ public class SoldierAI : MonoBehaviour
     {
         _state = SoldierState.Dead;
         ragdoll.RagdollModeOn();
+        GameObject PlayerObj = GameObject.FindGameObjectWithTag("Player");
+        PlayersMovement playersMovement = PlayerObj.GetComponent<PlayersMovement>();
+        if (!IsDead)
+        {
+            playersMovement.stamina += 30;
+        }
+        IsDead = true;
     }
 
 

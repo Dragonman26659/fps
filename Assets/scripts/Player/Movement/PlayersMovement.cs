@@ -8,23 +8,18 @@ public class PlayersMovement : MonoBehaviour
 
     public Slider slider;
     private float wait;
+    public Health PlayerHealth;
+    public coins CoinScript;
 
     [Header("Movement")]
 
     //floats
     private float moveSpeed;
     public float walkSpeed;
-    public float sprintSpeed;
     float horizontalInput;
     float VerticalInput;
     public float groundDrag;
-    public int maxStamina = 100;
-    public float StartRegenAfter = 2f;
-    public int stamina = 0;
-    private float nextStaminaMinus;
-    private float timeSinceLastRegen;
-    private float slideWait;
-    private float MaxSlideForce;
+
 
     //jump
     public float jumpForce;
@@ -44,10 +39,6 @@ public class PlayersMovement : MonoBehaviour
     public float chrouchSpeed;
     public float crouchYScale;
     private float startYScale;
-    public float slamForce = 10f;
-    public float slideSpeed = 10f;
-    public float slideTime = 2f;
-    public float currentSlideTime = 0f;
 
     [Header("GroundCheck")]
     public float playerHeight;
@@ -63,6 +54,42 @@ public class PlayersMovement : MonoBehaviour
     public AudioSource walkNoise;
     public AudioSource jumpNoise;
     public AudioSource crouchNoise;
+
+
+
+
+    [Header("Abilities")]
+    public float slamForce = 10f;
+    public float slideSpeed = 10f;
+    public float slideTime = 2f;
+    public float currentSlideTime = 0f;
+    public int maxStamina = 100;
+    public float StartRegenAfter = 1f;
+    public int stamina = 0;
+    private float nextStaminaMinus;
+    private float timeSinceLastRegen;
+    private float slideWait;
+    private float MaxSlideForce;
+    public float sprintSpeed;
+    private int JumpCounter = 1;
+    private int CurrentJumpCounter = 0;
+    private int JumpStamina = 10;
+    private float DashPower = 30;
+    private int dashCount = 1;
+    private int DashStamina = 10;
+    private int CurrentDashCounter = 0;
+    private int HealthLeachAmmount = 10;
+    private float HealthLeachCooldown = 1f;
+    private float CurrentHealthLeachCooldown = 0f;
+    public int doubleJumpAmmount = 0;
+    public int HealthLeachAmmt = 20;
+    public int DashAmmount;
+
+    [Header("Movement Upgrades")]
+    public GameObject doubleJumpUpgrade;
+    public GameObject dashUpgrade;
+    public GameObject HealthLeachUpgrade;
+
 
 
     public enum MovementState
@@ -88,6 +115,28 @@ public class PlayersMovement : MonoBehaviour
         startYScale = transform.localScale.y;
         MaxSlideForce = slideSpeed;
 
+        if (doubleJumpUpgrade.activeSelf)
+        {
+            JumpCounter += doubleJumpAmmount;
+        }
+        if (dashUpgrade.activeSelf)
+        {
+            dashCount = DashAmmount;
+        }
+        else
+        {
+            dashCount = 0;
+        }
+        if (HealthLeachUpgrade.activeSelf)
+        {
+            HealthLeachAmmt = HealthLeachAmmt;
+        }
+        else
+        {
+            HealthLeachAmmount = 0;
+        }
+        
+        CurrentJumpCounter = JumpCounter;
         stamina = maxStamina;
     }
 
@@ -98,9 +147,31 @@ public class PlayersMovement : MonoBehaviour
         slider.value = stamina;
 
 
+        //check for upgrades
+        if (doubleJumpUpgrade.activeSelf)
+        {
+            if (grounded)
+            {
+                JumpCounter = doubleJumpAmmount + 1;
+            }
+        }
+        if (dashUpgrade.activeSelf)
+        {
+            if (grounded)
+            {
+                dashCount = DashAmmount;
+            }
+        }
+        if (HealthLeachUpgrade.activeSelf)
+        {
+            HealthLeachAmmt = HealthLeachAmmt;
+        }
+
+
         nextStaminaMinus += Time.deltaTime;
         timeSinceLastRegen += Time.deltaTime;
         wait += Time.deltaTime;
+        CurrentHealthLeachCooldown += Time.deltaTime;
 
         //ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
@@ -122,9 +193,9 @@ public class PlayersMovement : MonoBehaviour
 
         if (nextStaminaMinus >= StartRegenAfter)
         {
-            if (timeSinceLastRegen >= 0.02f && state != MovementState.sliding && state != MovementState.air)
+            if (timeSinceLastRegen >= 0.2f && state != MovementState.sliding || state != MovementState.sprinting)
             {
-                if (wait > 0.1f)
+                if (wait > 0.5f)
                 {
                     stamina += 1;
                     wait = 0f;
@@ -137,6 +208,7 @@ public class PlayersMovement : MonoBehaviour
             stamina = maxStamina;
         }
     }
+
     private void FixedUpdate()
     {
         MovePlayer();
@@ -148,15 +220,29 @@ public class PlayersMovement : MonoBehaviour
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         VerticalInput = Input.GetAxisRaw("Vertical");
-
+        if (grounded)
+        {
+            CurrentJumpCounter = JumpCounter;
+            CurrentDashCounter = dashCount;
+        }
 
         //jump
-        if (Input.GetKey(jumpkey) && readyToJump && grounded)
+        if (Input.GetKey(jumpkey) && readyToJump && CurrentJumpCounter > 0)
         {
             Jump();
             readyToJump = false;
             Invoke(nameof(resetJump), jumpCooldown);
         }
+        if (state == MovementState.air && Input.GetKeyDown(sprintkey))
+            {
+                if (CurrentDashCounter > 0 && stamina > 0)
+                {
+                    rb.AddForce(orientation.forward * DashPower, ForceMode.Impulse);
+                    CurrentDashCounter --;
+                    stamina -= DashStamina;
+                    jumpNoise.Play();
+                }
+            }
         if (Input.GetKeyDown(crouchKey))
         {
 
@@ -182,16 +268,6 @@ public class PlayersMovement : MonoBehaviour
                 rb.AddForce(Vector3.down * slamForce, ForceMode.Impulse);
                 state = MovementState.chrouching;
             }
-            else if (state == MovementState.air && Input.GetKeyDown(sprintkey))
-            {
-                rb.AddForce(Vector3.down * slamForce, ForceMode.Impulse);
-                if (state != MovementState.sliding)
-                {
-                    currentSlideTime = slideTime;
-                    slideSpeed = MaxSlideForce;
-                }
-                state = MovementState.sliding;
-            }
         }
             
 
@@ -203,6 +279,19 @@ public class PlayersMovement : MonoBehaviour
             {
                 rb.AddForce(Vector3.up * 3f, ForceMode.Impulse);
             }
+        }
+
+        if (Input.GetMouseButton(1) && CurrentHealthLeachCooldown > HealthLeachCooldown)
+        {
+            PlayerHealth.TakeDamage(HealthLeachAmmount);
+            int newstamina = stamina + HealthLeachAmmount;
+            int coins = newstamina - maxStamina;
+            if (coins >= 0)
+            {
+                CoinScript.CoinAmmount += coins;
+            }
+            stamina = newstamina;
+            CurrentHealthLeachCooldown = 0;
         }
     }
 
@@ -241,10 +330,18 @@ public class PlayersMovement : MonoBehaviour
 
     private void Jump()
     {
-        //reset y veleocity
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        jumpNoise.Play();
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        if (grounded || stamina > 0)
+        {
+            //reset y veleocity
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            jumpNoise.Play();
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            if (!grounded)
+            {
+                stamina -= JumpStamina;
+            }
+            CurrentJumpCounter -= 1;
+        }
     }
 
 
@@ -263,7 +360,7 @@ public class PlayersMovement : MonoBehaviour
             moveSpeed = sprintSpeed;
             if (nextStaminaMinus > 0.1)
             {
-                stamina -= 1;
+                stamina -= 2;
                 if (stamina < 0)
                 {
                     stamina = 0;
@@ -295,7 +392,16 @@ public class PlayersMovement : MonoBehaviour
                 slideSpeed -= slideTime;
                 slideWait = 0.1f;
             }
-            if (slideSpeed <= chrouchSpeed)
+            if (nextStaminaMinus > 0.1)
+            {
+                stamina -= 1;
+                if (stamina < 0)
+                {
+                    stamina = 0;
+                }
+                nextStaminaMinus = 0f;
+            }
+            if (slideSpeed <= chrouchSpeed || stamina <= 0f)
             {
                 state = MovementState.chrouching;
             }

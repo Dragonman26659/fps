@@ -7,9 +7,7 @@ public class WeaponSwitching : MonoBehaviour
 
     public int selectedWeapon = -1;
     public int enabledWeapons = 0;
-
-
-
+    public bool[] unlockedWeapons; // new array to track unlocked weapons
 
 
     void Start()
@@ -22,7 +20,7 @@ public class WeaponSwitching : MonoBehaviour
         int prevSelectedWeapon = selectedWeapon;
         if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
-            if(selectedWeapon >= transform.childCount - 1)
+            if(selectedWeapon >= enabledWeapons - 1)
                 selectedWeapon = 0;
             else
                 selectedWeapon++;
@@ -30,7 +28,7 @@ public class WeaponSwitching : MonoBehaviour
         if (Input.GetAxis("Mouse ScrollWheel") < 0)
         {
             if(selectedWeapon <= 0)
-                selectedWeapon = transform.childCount - 1;
+                selectedWeapon = enabledWeapons - 1;
             else
                 selectedWeapon--;
         }
@@ -51,7 +49,7 @@ public class WeaponSwitching : MonoBehaviour
         int i = 0;
         foreach (Transform weapon in transform)
         {
-            if(i == selectedWeapon && i <= enabledWeapons)
+            if(i == selectedWeapon && i < enabledWeapons && unlockedWeapons[i])
             {
                 weapon.gameObject.SetActive(true);
             }
@@ -65,12 +63,9 @@ public class WeaponSwitching : MonoBehaviour
 
     public void WeaponPickup(int ID)
     {
-        enabledWeapons = ID-1;
-        selectedWeapon = ID-1;
+        unlockedWeapons[ID-1] = true;
+        enabledWeapons++;
         SelectWeapon();
     }
-
-
-
-
 }
+
