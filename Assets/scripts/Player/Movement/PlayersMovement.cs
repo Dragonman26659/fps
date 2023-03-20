@@ -16,6 +16,7 @@ public class PlayersMovement : MonoBehaviour
     //floats
     private float moveSpeed;
     public float walkSpeed;
+    public float wallRunSpeed;
     float horizontalInput;
     float VerticalInput;
     public float groundDrag;
@@ -74,7 +75,7 @@ public class PlayersMovement : MonoBehaviour
     private int JumpCounter = 1;
     private int CurrentJumpCounter = 0;
     private int JumpStamina = 10;
-    private float DashPower = 30;
+    public float DashPower = 30;
     private int dashCount = 1;
     private int DashStamina = 10;
     private int CurrentDashCounter = 0;
@@ -98,8 +99,12 @@ public class PlayersMovement : MonoBehaviour
         sprinting,
         air,
         chrouching,
-        sliding
+        sliding,
+        wallrunning
     }
+
+
+    public bool wallrunning;
 
 
 
@@ -353,6 +358,17 @@ public class PlayersMovement : MonoBehaviour
 
     private void StateHandeler()
     {
+        //wallrun
+
+        if (wallrunning)
+        {
+            state = MovementState.wallrunning;
+            moveSpeed = wallRunSpeed;
+        }
+
+
+
+
         //sprint
         if(grounded && Input.GetKey(sprintkey) && !Input.GetKey(crouchKey) && stamina > 0)
         {
